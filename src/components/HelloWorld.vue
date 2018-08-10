@@ -1,18 +1,20 @@
 <template>
   <div class="hello">
-    <button @click="post()"></button>
-    {{ posts }}
-    <h1 class="errmsg" v-if="posts.err != null">{{ posts.err }}</h1>
-    <table border="1" v-if="posts.name != null">
+    <h1 class="errmsg" v-if="err != null">{{ err.status }}</h1>
+    <table border="1" v-if="user.name != null">
       <tr>
         <th><h1>id</h1></th>
         <th><h1>name</h1></th>
       </tr>
       <tr>
-        <td><h2>{{ posts.id }}</h2></td>
-        <td><h2>{{ posts.name }}</h2></td>
+        <td><h2>{{ user.id }}</h2></td>
+        <td><h2>{{ user.name }}</h2></td>
       </tr>
     </table>
+    <div>
+      <button @click="getUser(index)">get next user id:{{ index }}</button>
+    </div>
+    <router-link to="createUser">create new user</router-link>
   </div>
 </template>
 
@@ -21,40 +23,34 @@
     name: 'HelloWorld',
     data() {
       return {
-        posts: ""
+        user: {
+          id: 1,
+          name: "",
+        },
+        index: 1,
+        err: "",
       }
     },
     mounted() {
-      axios.get('http://localhost:8000/1').then(res => {
-        // console.log(res.data);
-        var a = res.data;
-        this.posts = a
-        console.log(this.posts);
-      }).catch(function (error) {
-        console.log(error)
-        this.posts = {err: error.message}
-      });
+      this.getUser(this.index);
     },
     methods: {
-      post() {
-        axios.get('http://localhost:8000/2').then(res => {
-          // console.log(res.data);
-          var a = res.data;
-          this.posts = a
-          console.log(this.posts);
-        }).catch(function (error) {
-          console.log(error)
-          this.posts = {err: error.message}
+      getUser(id) {
+        axios.get('http://localhost:8000/' + id).then(res => {
+          this.user = res.data;
+          this.index++;
+        }).catch(err => {
+          this.err = err.response.data;
         });
       }
     }
   }
-
-
-  // console.log(a)
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
+  table {
+    margin-right: auto;
+    margin-left: auto;
+  }
 </style>
